@@ -20,16 +20,12 @@ import (
 	clPath "github.com/go-corelibs/path"
 )
 
+var _ TempData = (*tempdata)(nil)
+
 // TempData is an interface for creating and interacting with temporary
 // directories for unit testing purposes
 type TempData interface {
-	// Path returns the absolute path to the top-level temporary directory
-	// associated with this TempData instance
-	Path() (abs string)
-	// Join is a wrapper around filepath.Join, returning this temporary
-	// directory joined with the names given
-	Join(names ...string) (joined string)
-	// Create will make the temporary directory associated with this TestData
+	// Create will make the temporary directory associated with this TempData
 	// instance if it does not exist. Create does nothing if the directory
 	// exists. Create is only useful after a call to Destroy because the
 	// temporary directory for this instance has already been created during
