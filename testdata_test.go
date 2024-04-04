@@ -33,6 +33,7 @@ func TestTestData(t *testing.T) {
 		td := New()
 		So(td, ShouldNotBeNil)
 		So(td.Path(), ShouldEqual, tdPath)
+		So(td.Name(), ShouldEqual, DefaultTestData)
 		So(td.E("file.txt"), ShouldBeTrue)
 		So(td.F("file.txt"), ShouldEqual, "test file\n")
 		So(td.L("."), ShouldEqual, []string{
@@ -63,6 +64,7 @@ func TestTestData(t *testing.T) {
 		td := NewNamed("_testdata")
 		So(td, ShouldNotBeNil)
 		So(td.Path(), ShouldEqual, _tdPath)
+		So(td.Name(), ShouldEqual, "_testdata")
 		So(td.E("another.txt"), ShouldBeTrue)
 		td = NewNamed("")
 		So(td, ShouldNotBeNil)
