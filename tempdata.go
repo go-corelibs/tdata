@@ -16,7 +16,6 @@ package tdata
 
 import (
 	"os"
-	"path/filepath"
 
 	clPath "github.com/go-corelibs/path"
 )
@@ -39,6 +38,8 @@ type TempData interface {
 	// Destroy attempts to correct any file permissions and removes the
 	// entire temporary directory associated with this TempData instance
 	Destroy() (err error)
+
+	TData
 }
 
 // NewTempData constructs a new TempData instance using the given `dir` and
@@ -50,21 +51,14 @@ func NewTempData(dir, pattern string) (td TempData, err error) {
 func newTempData(dir, pattern string) (td *tempdata, err error) {
 	var path string
 	if path, err = os.MkdirTemp(dir, pattern); err == nil {
-		td = &tempdata{path: path}
+		td = &tempdata{}
+		td.path = path
 	}
 	return
 }
 
 type tempdata struct {
-	path string
-}
-
-func (td *tempdata) Path() (abs string) {
-	return td.path
-}
-
-func (td *tempdata) Join(names ...string) (joined string) {
-	return filepath.Join(append([]string{td.path}, names...)...)
+	tdata
 }
 
 func (td *tempdata) Create() (err error) {
