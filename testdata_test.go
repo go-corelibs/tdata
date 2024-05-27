@@ -58,6 +58,9 @@ func TestTestData(t *testing.T) {
 		So(td.LH("dir"), ShouldEqual, []string{
 			td.Join("dir/.gitkeep"),
 		})
+		So(td.LAH(td.Join("dir")), ShouldEqual, []string{
+			td.Join("dir/.gitkeep"),
+		})
 	})
 
 	Convey("Custom Path", t, func() {

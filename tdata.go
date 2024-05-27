@@ -17,6 +17,7 @@ package tdata
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	clPath "github.com/go-corelibs/path"
 )
@@ -64,70 +65,100 @@ func (td *tdata) Path() (abs string) {
 	return td.path
 }
 
+func (td *tdata) prune(path string) (pruned string) {
+	pruned = strings.TrimPrefix(path, td.path+"/")
+	return
+}
+
+func (td *tdata) clean(path string) (cleaned string) {
+	cleaned = td.Join(td.prune(path))
+	return
+}
+
+func (td *tdata) cleanSlice(found []string) {
+	for idx := range found {
+		found[idx] = td.clean(found[idx])
+	}
+}
+
 func (td *tdata) Join(names ...string) (joined string) {
-	return filepath.Join(append([]string{td.path}, names...)...)
+	join := []string{td.path}
+	for _, name := range names {
+		join = append(join, td.prune(name))
+	}
+	return filepath.Join(join...)
 }
 
 func (td *tdata) E(filename string) (exists bool) {
-	exists = clPath.Exists(filepath.Join(td.path, filename))
+	exists = clPath.Exists(td.Join(filename))
 	return
 }
 
 func (td *tdata) F(filename string) (contents string) {
-	if data, err := os.ReadFile(filepath.Join(td.path, filename)); err == nil {
+	if data, err := os.ReadFile(td.Join(filename)); err == nil {
 		contents = string(data)
 	}
 	return
 }
 
 func (td *tdata) L(dirname string) (found []string) {
-	found, _ = clPath.List(filepath.Join(td.path, dirname), false)
+	found, _ = clPath.List(td.Join(dirname), false)
+	td.cleanSlice(found)
 	return
 }
 
 func (td *tdata) LD(dirname string) (found []string) {
-	found, _ = clPath.ListDirs(filepath.Join(td.path, dirname), false)
+	found, _ = clPath.ListDirs(td.Join(dirname), false)
+	td.cleanSlice(found)
 	return
 }
 
 func (td *tdata) LF(dirname string) (found []string) {
-	found, _ = clPath.ListFiles(filepath.Join(td.path, dirname), false)
+	found, _ = clPath.ListFiles(td.Join(dirname), false)
+	td.cleanSlice(found)
 	return
 }
 
 func (td *tdata) LA(dirname string) (found []string) {
 	found = append(found, td.LAD(dirname)...)
 	found = append(found, td.LAF(dirname)...)
+	td.cleanSlice(found)
 	return
 }
 
 func (td *tdata) LAD(dirname string) (found []string) {
-	found, _ = clPath.ListAllDirs(filepath.Join(td.path, dirname), false)
+	found, _ = clPath.ListAllDirs(td.Join(dirname), false)
+	td.cleanSlice(found)
 	return
 }
 
 func (td *tdata) LAF(dirname string) (found []string) {
-	found, _ = clPath.ListAllFiles(filepath.Join(td.path, dirname), false)
+	found, _ = clPath.ListAllFiles(td.Join(dirname), false)
+	td.cleanSlice(found)
 	return
 }
 
 func (td *tdata) LH(dirname string) (found []string) {
-	found, _ = clPath.List(filepath.Join(td.path, dirname), true)
+	found, _ = clPath.List(td.Join(dirname), true)
+	td.cleanSlice(found)
 	return
 }
 
 func (td *tdata) LAH(dirname string) (found []string) {
 	found = append(found, td.LADH(dirname)...)
 	found = append(found, td.LAFH(dirname)...)
+	td.cleanSlice(found)
 	return
 }
 
 func (td *tdata) LADH(dirname string) (found []string) {
-	found, _ = clPath.ListAllDirs(filepath.Join(td.path, dirname), true)
+	found, _ = clPath.ListAllDirs(td.Join(dirname), true)
+	td.cleanSlice(found)
 	return
 }
 
 func (td *tdata) LAFH(dirname string) (found []string) {
-	found, _ = clPath.ListAllFiles(filepath.Join(td.path, dirname), true)
+	found, _ = clPath.ListAllFiles(td.Join(dirname), true)
+	td.cleanSlice(found)
 	return
 }
